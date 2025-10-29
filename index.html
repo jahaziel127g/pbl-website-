@@ -1,226 +1,181 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CleanFlow Delhi — AI River Cleanup</title>
 
-  <!-- Google Font: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // Add Inter font family to Tailwind
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-        },
-      },
-    }
-  </script>
-  
   <meta name="description" content="CleanFlow Delhi — affordable AI system to detect, classify, and collect river trash." />
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* Custom glass effect */
     .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
-    /* Chat bubble styles */
     .bot-bubble { background: #eef6ff; color: #003366; }
     .user-bubble { background: #003366; color: white; }
-    /* Chat widget minimized state */
-    .chat-minimized {
-      /* Height of the chat header (p-3 top/bottom + h-9 content) */
-      height: 60px;
-      overflow: hidden;
-    }
-    /* Add typing indicator animation */
-    .typing-indicator span {
-      animation: pulse 1.4s infinite;
-      display: inline-block;
-      border-radius: 50%;
-      background-color: currentColor;
-      width: 8px;
-      height: 8px;
-      margin: 0 1px;
-    }
-    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes pulse {
-      0%, 80%, 100% { opacity: 0.3; }
-      40% { opacity: 1; }
-    }
   </style>
 </head>
-<body class="bg-blue-50 text-slate-900 antialiased font-sans">
+<body class="bg-blue-50 text-slate-900 antialiased">
 
 <!-- NAV -->
-<!-- Sticky header with backdrop blur for a modern effect -->
-<header class="bg-white/80 backdrop-blur sticky top-0 z-40 border-b border-slate-200">
+<header class="bg-white/80 backdrop-blur sticky top-0 z-40 border-b">
   <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <!-- Replaced with a placeholder logo. Update src with your logo path. -->
-      <div class="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-lg font-bold text-lg">
-        <img 
-          src="images/478B6B89-A705-44C0-8E04-476C98A9C384.png" 
-          alt="CleanFlow Delhi Logo" 
-          class="w-full h-full object-contain rounded-lg"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-        >
-        <!-- Fallback text if image fails -->
-        <span class="hidden">CF</span>
+      <!-- LOGO -->
+      <div class="w-10 h-10">
+        <img src="images/478B6B89-A705-44C0-8E04-476C98A9C384.png" alt="CleanFlow Logo" class="w-full h-full object-contain">
       </div>
       <div>
-        <h1 class="text-lg font-semibold text-slate-800">CleanFlow Delhi</h1>
+        <h1 class="text-lg font-semibold">CleanFlow Delhi</h1>
         <p class="text-xs text-slate-500">AI-powered river cleanup</p>
       </div>
     </div>
-    <!-- Desktop navigation -->
     <nav class="hidden md:flex gap-4 items-center text-sm">
-      <a href="#about" class="px-3 py-2 hover:bg-blue-100 rounded-md text-slate-600 hover:text-slate-900 transition-colors">About</a>
-      <a href="#prototype" class="px-3 py-2 hover:bg-blue-100 rounded-md text-slate-600 hover:text-slate-900 transition-colors">Prototype</a>
-      <a href="#impact" class="px-3 py-2 hover:bg-blue-100 rounded-md text-slate-600 hover:text-slate-900 transition-colors">Impact</a>
-      <a href="#monitor" class="px-3 py-2 hover:bg-blue-100 rounded-md text-slate-600 hover:text-slate-900 transition-colors">Monitor</a>
-      <button onclick="openChat()" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition-all">Chat with FlowMate</button>
+      <a href="#about" class="px-3 py-2 hover:bg-blue-50 rounded">About</a>
+      <a href="#prototype" class="px-3 py-2 hover:bg-blue-50 rounded">Prototype</a>
+      <a href="#model" class="px-3 py-2 hover:bg-blue-50 rounded">Model</a>
+      <a href="#impact" class="px-3 py-2 hover:bg-blue-50 rounded">Impact</a>
+      <a href="#monitor" class="px-3 py-2 hover:bg-blue-50 rounded">Monitor</a>
+      <button onclick="openChat()" class="bg-blue-600 text-white px-3 py-2 rounded shadow">Chat with FlowMate</button>
     </nav>
-    <!-- Mobile chat button -->
     <div class="md:hidden flex items-center gap-2">
-      <button onclick="openChat()" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm">Chat</button>
+      <button onclick="openChat()" class="bg-blue-600 text-white px-3 py-2 rounded">Chat</button>
     </div>
   </div>
 </header>
 
 <!-- HERO -->
-<main class="max-w-6xl mx-auto px-6 py-12 md:py-16">
-  <section class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+<main class="max-w-6xl mx-auto px-6 py-12">
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
     <div class="space-y-6">
-      <h2 class="text-3xl md:text-5xl font-extrabold text-slate-800 leading-tight">AI-Powered River Cleanup for Delhi</h2>
-      <p class="text-lg text-slate-600">Affordable, solar-powered systems to detect, classify, and collect river trash. Built with recyclable materials, for our communities.</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800">CleanFlow Delhi — AI meets rivers</h2>
+      <p class="text-slate-600">Affordable AI-powered systems that detect, classify, and collect trash from Delhi’s rivers. Solar-powered, recyclable materials, and made for communities.</p>
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="p-4 bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col">
-          <span class="text-xs text-slate-500">System Status</span>
-          <div class="mt-2 font-bold text-lg text-green-600">Active</div>
-          <!-- Added aria-live to announce updates -->
-          <div class="text-sm text-slate-600 mt-1">Collection: <strong id="today-collection" class="font-semibold" aria-live="polite" aria-atomic="true">12kg</strong> today</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-4 bg-white rounded-lg shadow-sm border flex flex-col">
+          <span class="text-xs text-slate-400">System Status</span>
+          <div class="mt-2 font-semibold text-blue-700">Active</div>
+          <div class="text-sm text-slate-500 mt-1">Collection: <strong id="today-collection">12kg</strong> today</div>
         </div>
-        <div class="p-4 bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col">
-          <span class="text-xs text-slate-500">Prototype Unit Cost</span>
-          <div class="mt-2 font-bold text-lg text-blue-700">₹25,00,000</div>
-          <div class="text-sm text-slate-600 mt-1">Solar-powered, ~12W avg.</div>
+        <div class="p-4 bg-white rounded-lg shadow-sm border flex flex-col">
+          <span class="text-xs text-slate-400">Prototype Unit Cost</span>
+          <div class="mt-2 font-semibold text-blue-700">₹25,00,000</div>
+          <div class="text-sm text-slate-500 mt-1">Solar-powered — ~12W usage</div>
         </div>
       </div>
 
-      <!-- Call to Action Buttons -->
-      <div class="flex flex-col sm:flex-row gap-3 mt-4">
-        <a href="#prototype" class="px-5 py-3 bg-blue-600 text-white text-center rounded-md shadow-md hover:bg-blue-700 transition-all font-medium">See Prototype</a>
-        <button onclick="openChat()" class="px-5 py-3 border border-blue-600 rounded-md text-blue-600 hover:bg-blue-50 transition-all font-medium">Talk to FlowMate</button>
+      <div class="flex gap-3 mt-3">
+        <a href="#prototype" class="px-4 py-2 bg-blue-600 text-white rounded shadow">See Prototype</a>
+        <button onclick="openChat()" class="px-4 py-2 border border-blue-600 rounded text-blue-600">Talk to FlowMate</button>
       </div>
     </div>
-    <!-- Hero Image Placeholder -->
-    <div class="rounded-lg overflow-hidden border bg-white shadow-lg">
-      <img 
-        src="images/hero-placeholder.jpg" 
-        alt="AI-powered river cleanup drone prototype in action on the Yamuna river." 
-        class="w-full h-72 md:h-96 object-cover"
-        loading="lazy"
-        onerror="this.parentElement.innerHTML = '<div class=\'w-full h-72 md:h-96 bg-blue-100 flex items-center justify-center text-blue-700\'>Hero image placeholder</div>'"
-      >
+    <div class="rounded-lg overflow-hidden border bg-white shadow-sm">
+      <img src="images/hero-placeholder.jpg" alt="Add your hero image in images/hero-placeholder.jpg" class="w-full h-72 object-cover">
     </div>
   </section>
 
   <!-- KEY STATS -->
-  <section id="about" class="mt-16 md:mt-24">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-        <h3 class="text-sm font-medium text-slate-500">River Pollution</h3>
-        <div class="mt-2 font-bold text-2xl text-slate-800">3,800+ tons daily</div>
-        <p class="text-sm text-slate-600 mt-2">Massive trash inflow threatens ecosystems and communities.</p>
-      </div>
-      <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-        <h3 class="text-sm font-medium text-slate-500">Untreated Sewage</h3>
-        <div class="mt-2 font-bold text-2xl text-slate-800">80%</div>
-        <p class="text-sm text-slate-600 mt-2">Large share of contamination from untreated sewage.</p>
-      </div>
-      <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-        <h3 class="text-sm font-medium text-slate-500">People Affected</h3>
-        <div class="mt-2 font-bold text-2xl text-slate-800">22M+</div>
-        <p class="text-sm text-slate-600 mt-2">Millions rely on river water — health and livelihoods at risk.</p>
-      </div>
+  <section id="about" class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="p-5 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-sm text-slate-500">River Pollution</h3>
+      <div class="mt-2 font-bold text-xl text-slate-800">3,800+ tons daily</div>
+      <p class="text-sm text-slate-500 mt-2">Massive trash inflow — threatens ecosystems and communities.</p>
+    </div>
+    <div class="p-5 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-sm text-slate-500">Untreated Sewage</h3>
+      <div class="mt-2 font-bold text-xl text-slate-800">80%</div>
+      <p class="text-sm text-slate-500 mt-2">Large share of contamination from untreated sewage.</p>
+    </div>
+    <div class="p-5 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-sm text-slate-500">People Affected</h3>
+      <div class="mt-2 font-bold text-xl text-slate-800">22M+</div>
+      <p class="text-sm text-slate-500 mt-2">Millions rely on river water — health and livelihoods at risk.</p>
     </div>
   </section>
 
   <!-- PIE CHART + MONITOR -->
-  <section id="monitor" class="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-      <h3 class="text-lg font-semibold text-slate-800">Pollution Source Analysis</h3>
+  <section id="monitor" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="p-6 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-lg font-semibold text-slate-800">Water Threat vs Garbage Polluted</h3>
       <p class="text-sm text-slate-500 mt-1">Pie chart uses provided values: water threat = <strong>27.5</strong>, garbage polluted = <strong>72.5</strong>.</p>
-      <div class="mt-4 relative h-64 md:h-72">
-        <canvas id="pieChart"></canvas>
+      <div class="mt-4">
+        <canvas id="pieChart" width="400" height="260"></canvas>
       </div>
     </div>
-    <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
+    <div class="p-6 bg-white rounded-lg shadow-sm border">
       <h3 class="text-lg font-semibold text-slate-800">CleanFlow Monitor</h3>
-      <ul class="mt-3 space-y-2 text-sm text-slate-600 list-disc list-inside">
-        <li>AI Detection: Plastic 68%, Paper 12%, Other 20%</li>
+      <ul class="mt-3 space-y-2 text-sm text-slate-600">
+        <li>AI Detection Breakdown: Plastic 68%, Paper 12%, Other 20%</li>
         <li>Prototype Detection Accuracy: <strong>85%</strong></li>
         <li>Prototype Collection Rate: <strong>72%</strong></li>
-        <li>Power Usage: <strong>12W</strong> (20W solar, 12hr backup)</li>
-        <li>Est. removal per device: <strong>500+ tons / year</strong></li>
+        <li>Power Usage: <strong>12W</strong> (20W solar panel, 12 hours backup)</li>
+        <li>Potential removal per device: <strong>500+ tons / year</strong> (estimate)</li>
       </ul>
-      <div class="mt-5">
-        <button onclick="simulateCollection(1.2)" class="px-4 py-2 bg-sky-600 text-white rounded-md shadow-sm hover:bg-sky-700 transition-colors">Simulate +1.2kg</button>
-        <button onclick="openChat()" class="ml-2 px-4 py-2 border rounded-md border-sky-600 text-sky-600 hover:bg-sky-50 transition-colors">Ask FlowMate</button>
+      <div class="mt-4">
+        <button onclick="simulateCollection(1.2)" class="px-3 py-2 bg-sky-600 text-white rounded">Simulate +1.2kg</button>
+        <button onclick="openChat()" class="ml-2 px-3 py-2 border rounded border-sky-600 text-sky-600">Ask FlowMate</button>
       </div>
     </div>
   </section>
 
   <!-- PROTOTYPE -->
-  <section id="prototype" class="mt-16 md:mt-20">
-    <div class="p-6 md:p-8 bg-white rounded-lg shadow-sm border border-slate-200">
-      <h3 class="text-2xl font-semibold text-slate-800">Working Prototype</h3>
+  <section id="prototype" class="mt-10">
+    <div class="p-6 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-2xl font-semibold">Working Prototype</h3>
       <p class="text-slate-600 mt-2">Small-scale demo built with Raspberry Pi + TensorFlow Lite and a mechanical collection system.</p>
-      <div class="grid md:grid-cols-3 gap-5 mt-6">
-        <div class="p-5 border border-slate-200 rounded-lg bg-slate-50">
-          <h4 class="font-semibold text-slate-800">AI Vision</h4>
+      <div class="grid md:grid-cols-3 gap-4 mt-6">
+        <div class="p-4 border rounded">
+          <h4 class="font-semibold">AI Vision</h4>
           <p class="text-sm text-slate-600 mt-1">Raspberry Pi + camera, TensorFlow Lite. Real-time detection (85% accuracy in lab tests).</p>
         </div>
-        <div class="p-5 border border-slate-200 rounded-lg bg-slate-50">
-          <h4 class="font-semibold text-slate-800">Collection Mechanism</h4>
+        <div class="p-4 border rounded">
+          <h4 class="font-semibold">Collection Mechanism</h4>
           <p class="text-sm text-slate-600 mt-1">Servo-driven conveyor and grabber, handles items up to 500g.</p>
         </div>
-        <div class="p-5 border border-slate-200 rounded-lg bg-slate-50">
-          <h4 class="font-semibold text-slate-800">Power</h4>
+        <div class="p-4 border rounded">
+          <h4 class="font-semibold">Power</h4>
           <p class="text-sm text-slate-600 mt-1">20W solar panel + battery, ~12W average system draw.</p>
         </div>
       </div>
       <div class="mt-6">
-        <a class="inline-block px-5 py-3 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition-all font-medium" href="#impact">See Impact</a>
+        <a class="inline-block px-4 py-2 bg-blue-600 text-white rounded" href="#impact">See Impact</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW THE MODEL WORKS -->
+  <section id="model" class="mt-10">
+    <div class="p-6 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-2xl font-semibold">How the AI Model Works</h3>
+      <p class="text-slate-600 mt-2">FlowMate explains the process in simple steps:</p>
+      <ol class="list-decimal list-inside mt-3 text-sm text-slate-700 space-y-1">
+        <li><strong>Camera Capture:</strong> Raspberry Pi camera captures real-time river images.</li>
+        <li><strong>AI Detection:</strong> TensorFlow Lite model identifies types of trash (plastic, paper, others).</li>
+        <li><strong>Classification:</strong> Each item is classified and prioritized for collection.</li>
+        <li><strong>Mechanical Collection:</strong> Servo-driven grabbers collect trash based on AI input.</li>
+        <li><strong>Data Logging:</strong> Collection data and type breakdown are sent to FlowMate dashboard.</li>
+      </ol>
+      <div class="mt-4">
+        <button onclick="openChat()" class="px-4 py-2 bg-blue-600 text-white rounded shadow">Ask FlowMate for details</button>
       </div>
     </div>
   </section>
 
   <!-- IMPACT -->
-  <section id="impact" class="mt-16 md:mt-20 grid md:grid-cols-2 gap-6">
-    <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-      <h3 class="text-xl font-semibold text-slate-800">Environmental Impact</h3>
-      <ul class="mt-3 text-base text-slate-600 space-y-2 list-disc list-inside">
+  <section id="impact" class="mt-10 grid md:grid-cols-2 gap-6">
+    <div class="p-6 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-xl font-semibold">Environmental Impact</h3>
+      <ul class="mt-3 text-sm text-slate-600 space-y-2">
         <li>Reduce plastic pollution from river systems</li>
         <li>Improve water quality and support biodiversity</li>
-        <li>Prevent trash from entering the ocean</li>
+        <li>Prevent trash entering the ocean</li>
       </ul>
     </div>
-    <div class="p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-      <h3 class="text-xl font-semibold text-slate-800">Social Impact</h3>
-      <ul class="mt-3 text-base text-slate-600 space-y-2 list-disc list-inside">
+    <div class="p-6 bg-white rounded-lg shadow-sm border">
+      <h3 class="text-xl font-semibold">Social Impact</h3>
+      <ul class="mt-3 text-sm text-slate-600 space-y-2">
         <li>Healthier riverside communities</li>
         <li>Green jobs in manufacturing and maintenance</li>
         <li>Awareness and data for policy & prevention</li>
@@ -228,61 +183,40 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="mt-16 md:mt-24 py-8 text-center text-sm text-slate-500 border-t border-slate-200">
-    <div>© <strong>CleanFlow Delhi</strong> — Prototype & demo content.</div>
+  <footer class="mt-12 py-8 text-center text-sm text-slate-500">
+    <div>© <strong>CleanFlow Delhi</strong> — Prototype & demo content. Replace images with your own.</div>
   </footer>
 </main>
 
 <!-- CHAT WIDGET -->
-<div id="chatWidget" class="fixed right-4 bottom-4 w-80 md:w-96 rounded-lg shadow-xl overflow-hidden hidden z-50 bg-white border border-slate-300 transition-all duration-300">
-  <!-- Chat Header -->
+<div id="chatWidget" class="fixed right-6 bottom-6 w-80 md:w-96 rounded-lg shadow-lg overflow-hidden hidden">
   <div class="p-3 bg-blue-600 text-white flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center font-bold shrink-0">FM</div>
+      <div class="w-9 h-9 rounded bg-white/20 flex items-center justify-center font-bold">FM</div>
       <div>
         <div class="text-sm font-semibold">FlowMate</div>
         <div class="text-xs opacity-90">AI assistant — prototype data</div>
       </div>
     </div>
-    <div class="flex items-center gap-1">
-      <!-- Minimize Button with SVG and aria-label -->
-      <button onclick="minimizeChat()" title="Minimize" aria-label="Minimize chat" class="w-7 h-7 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
-        </svg>
-      </button>
-      <!-- Close Button with SVG and aria-label -->
-      <button onclick="closeChat()" title="Close" aria-label="Close chat" class="w-7 h-7 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+    <div class="flex items-center gap-2">
+      <button onclick="minimizeChat()" title="Minimize" class="text-white/80 hover:text-white">&minus;</button>
+      <button onclick="closeChat()" title="Close" class="text-white/80 hover:text-white">&times;</button>
     </div>
   </div>
 
-  <!-- Chat Body -->
-  <!-- Added role="log" and aria-live="polite" for accessibility -->
-  <div id="chatBody" role="log" aria-live="polite" class="bg-white p-3 h-80 overflow-auto space-y-3">
-    <div role="article" class="bot-bubble p-3 rounded-lg text-sm max-w-[85%] bot-bubble">
-      Hi! I'm FlowMate, your AI buddy for CleanFlow Delhi. Ask me about prototype specs, river pollution stats, or daily collection updates.
+  <div id="chatBody" class="bg-white p-3 h-64 overflow-auto space-y-3">
+    <div class="bot-bubble p-3 rounded-lg text-sm max-w-[85%] bot-bubble">
+      Hi! I'm FlowMate, your AI buddy for CleanFlow Delhi. Ask me about prototype specs, river pollution stats, daily collection, or how the model works.
     </div>
   </div>
 
-  <!-- Chat Input -->
-  <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
-    <input 
-      id="chatInput" 
-      class="flex-1 px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-      placeholder="Ask FlowMate..." 
-      aria-label="Chat message"
-    />
-    <button onclick="sendChat()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shrink-0" aria-label="Send message">Send</button>
+  <div class="p-3 bg-white border-t flex items-center gap-2">
+    <input id="chatInput" class="flex-1 px-3 py-2 border rounded-md text-sm" placeholder="Ask FlowMate..." />
+    <button onclick="sendChat()" class="px-3 py-2 bg-blue-600 text-white rounded">Send</button>
   </div>
 </div>
 
 <script>
-// --- DATA STORE ---
 const CLEANFLOW_DATA = {
   siteName: "CleanFlow Delhi",
   pollutionStats: { untreatedSewagePct: 80, tonsDaily: "3,800+", plasticSharePct: 60, peopleAffected: "22M+" },
@@ -292,58 +226,16 @@ const CLEANFLOW_DATA = {
   pieData: { waterThreat: 27.5, garbagePolluted: 72.5 }
 };
 
-// Initial UI setup
 document.getElementById('today-collection').innerText = CLEANFLOW_DATA.monitor.collectionTodayKg + 'kg';
 
-// --- CHART.JS IMPLEMENTATION ---
+// Pie chart
 const ctx = document.getElementById('pieChart').getContext('2d');
-new Chart(ctx, {
-  type: 'pie',
-  data: {
-    labels: ['Water Threat', 'Garbage Polluted'],
-    datasets: [{
-      data: [CLEANFLOW_DATA.pieData.waterThreat, CLEANFLOW_DATA.pieData.garbagePolluted],
-      backgroundColor: ['#60a5fa', '#1e40af'], // Tailwind blue-400, blue-800
-      borderColor: '#ffffff',
-      borderWidth: 2,
-      hoverOffset: 8
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          font: {
-            family: 'Inter',
-            size: 12
-          }
-        }
-      },
-      tooltip: {
-        font: {
-          family: 'Inter'
-        },
-        callbacks: {
-          label: function(context) {
-            let label = context.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed !== null) {
-              label += context.parsed + '%';
-            }
-            return label;
-          }
-        }
-      }
-    }
-  }
-});
+new Chart(ctx, { type: 'pie', data: {
+  labels: ['Water Threat', 'Garbage Polluted'],
+  datasets: [{ data: [CLEANFLOW_DATA.pieData.waterThreat, CLEANFLOW_DATA.pieData.garbagePolluted], backgroundColor: ['#60a5fa', '#1e40af'], hoverOffset: 6 }]
+}, options: { plugins:{legend:{position:'bottom'}}}});
 
-// --- CHATBOT KNOWLEDGE BASE ---
+// Chatbot KB
 const kb = [
   { keywords: ['detection','accuracy','detect'], answer: `Prototype detection accuracy is ${CLEANFLOW_DATA.prototype.detectionAccuracyPct}%.` },
   { keywords: ['collection','rate'], answer: `Collection rate: ${CLEANFLOW_DATA.prototype.collectionRatePct}%. Capacity ~${CLEANFLOW_DATA.prototype.capacityAnnualTonsEstimate}+ tons/year.` },
@@ -353,167 +245,34 @@ const kb = [
   { keywords: ['pollution','waste','daily'], answer: `Delhi rivers: ~${CLEANFLOW_DATA.pollutionStats.tonsDaily} tons/day, untreated sewage ${CLEANFLOW_DATA.pollutionStats.untreatedSewagePct}%.` },
   { keywords: ['people','affected'], answer: `${CLEANFLOW_DATA.pollutionStats.peopleAffected} people affected.` },
   { keywords: ['impact','helps'], answer: `Impact: reduce plastic pollution, improve health, green jobs. Each device may remove ~${CLEANFLOW_DATA.prototype.capacityAnnualTonsEstimate}+ tons/year.` },
-  { keywords: ['chart','pie'], answer: `Pie chart: Water Threat ${CLEANFLOW_DATA.pieData.waterThreat}%, Garbage Polluted ${CLEANFLOW_DATA.pieData.garbagePolluted}%.` }
+  { keywords: ['chart','pie'], answer: `Pie chart: Water Threat ${CLEANFLOW_DATA.pieData.waterThreat}, Garbage Polluted ${CLEANFLOW_DATA.pieData.garbagePolluted}.` },
+  { keywords: ['model','how it works','ai','tensorflow','detection'], answer: "FlowMate AI model captures images with a camera, classifies trash using TensorFlow Lite, and guides the mechanical collection system. Steps: 1️⃣ Capture, 2️⃣ Detect, 3️⃣ Classify, 4️⃣ Collect, 5️⃣ Log data." }
 ];
 
-// --- CHAT WIDGET FUNCTIONS ---
-function openChat() {
-  document.getElementById('chatWidget').classList.remove('hidden');
-  document.getElementById('chatInput').focus();
+function openChat(){ document.getElementById('chatWidget').classList.remove('hidden'); document.getElementById('chatInput').focus(); }
+function closeChat(){ document.getElementById('chatWidget').classList.add('hidden'); }
+function minimizeChat(){ const w=document.getElementById('chatWidget'); w.style.height = w.style.height && w.style.height!==''?'':'40px'; }
+
+function appendMessage(text, from='bot'){ const container=document.createElement('div'); container.className=from==='bot'?'bot-bubble p-3 rounded-lg text-sm max-w-[85%]':'user-bubble p-3 rounded-lg text-sm ml-auto max-w-[85%]'; container.textContent=text; document.getElementById('chatBody').appendChild(container); document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }
+
+function sendChat(){ const input=document.getElementById('chatInput'); const txt=input.value.trim(); if(!txt) return; appendMessage(txt,'user'); input.value=''; setTimeout(()=>{ appendMessage(generateReply(txt),'bot'); },400); }
+
+function generateReply(userText){ 
+  const u=userText.toLowerCase(); 
+  if(u.includes('hello')||u.includes('hi')) return "Hey! I'm FlowMate, AI buddy for CleanFlow Delhi. Ask me about prototype specs, pollution stats, daily collection, or how the model works."; 
+  if(u.includes('status')) return `System Status: ${CLEANFLOW_DATA.monitor.status}. Today's collection: ${CLEANFLOW_DATA.monitor.collectionTodayKg}kg.`; 
+  for(const entry of kb) if(entry.keywords.some(k=>u.includes(k))) return entry.answer; 
+  return `Quick summary: Detection ${CLEANFLOW_DATA.prototype.detectionAccuracyPct}% | Collection rate ${CLEANFLOW_DATA.prototype.collectionRatePct}% | Power ${CLEANFLOW_DATA.prototype.powerUsageW}W | Unit cost ₹${CLEANFLOW_DATA.prototype.unitCostINR.toLocaleString()}. Ask me for specific stats.`; 
 }
 
-function closeChat() {
-  document.getElementById('chatWidget').classList.add('hidden');
-}
+document.getElementById('chatInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); sendChat(); }});
 
-/**
- * Toggles the 'chat-minimized' class on the widget.
- * CSS handles the height transition.
- */
-function minimizeChat() {
-  document.getElementById('chatWidget').classList.toggle('chat-minimized');
-}
-
-/**
- * Appends a message to the chat body.
- * @param {string} text - The message text.
- * @param {string} from - 'bot' or 'user'.
- * @param {string|null} id - An optional ID for the message element.
- */
-function appendMessage(text, from = 'bot', id = null) {
-  const chatBody = document.getElementById('chatBody');
-  const container = document.createElement('div');
-  
-  // Set ARIA role for screen readers
-  container.setAttribute('role', 'article');
-  
-  if (id) {
-    container.id = id;
-  }
-  
-  container.className = from === 'bot'
-    ? 'bot-bubble p-3 rounded-lg text-sm max-w-[85%] bot-bubble'
-    : 'user-bubble p-3 rounded-lg text-sm ml-auto max-w-[85%] user-bubble';
-    
-  if (id === 'typing-indicator') {
-    // Render typing dots
-    container.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-    container.classList.add('py-4'); // Adjust padding for indicator
-  } else {
-    // Use innerText to prevent HTML injection
-    container.innerText = text;
-  }
-  
-  chatBody.appendChild(container);
-  
-  // Scroll to the bottom
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-
-/**
- * Sends the user's message and triggers a bot reply.
- */
-function sendChat() {
-  const input = document.getElementById('chatInput');
-  const txt = input.value.trim();
-  
-  if (!txt) return;
-  
-  appendMessage(txt, 'user');
-  input.value = '';
-  
-  // Show typing indicator
-  appendMessage('', 'bot', 'typing-indicator');
-  
-  // Simulate bot thinking time
-  setTimeout(() => {
-    // Remove typing indicator
-    document.getElementById('typing-indicator')?.remove();
-    // Generate and append the new "smarter" reply
-    appendMessage(generateReply(txt), 'bot');
-  }, 500 + Math.random() * 300); // Slightly variable delay
-}
-
-/**
- * Generates a bot reply based on keyword matching.
- * @param {string} userText - The user's input.
- * @returns {string} The bot's reply.
- */
-function generateReply(userText) {
-  const u = userText.toLowerCase();
-  
-  // --- Special Cases ---
-  if (u.includes('hello') || u.includes('hi') || u.includes('hey')) {
-    return "Hey! I'm FlowMate, AI buddy for CleanFlow Delhi. Ask me about prototype specs, pollution stats, or daily collection updates.";
-  }
-  
-  if (u.includes('status')) {
-    return `System Status: ${CLEANFLOW_DATA.monitor.status}. Today's collection: ${CLEANFLOW_DATA.monitor.collectionTodayKg.toFixed(1)}kg.`;
-  }
-
-  // --- Scoring Logic ---
-  let matches = [];
-  for (const entry of kb) {
-    let score = 0;
-    for (const keyword of entry.keywords) {
-      if (u.includes(keyword)) {
-        score++;
-      }
-    }
-    if (score > 0) {
-      matches.push({ answer: entry.answer, score: score });
-    }
-  }
-
-  // --- Response Generation ---
-  if (matches.length === 0) {
-    // No matches
-    return `Quick summary: Detection ${CLEANFLOW_DATA.prototype.detectionAccuracyPct}% | Collection rate ${CLEANFLOW_DATA.prototype.collectionRatePct}% | Power ${CLEANFLOW_DATA.prototype.powerUsageW}W | Unit cost ₹${CLEANFLOW_DATA.prototype.unitCostINR.toLocaleString()}. Ask me for specific stats.`;
-  }
-
-  // Sort by score, descending
-  matches.sort((a, b) => b.score - a.score);
-
-  // Get the highest score
-  const topScore = matches[0].score;
-
-  // Filter to include *all* matches with the top score
-  // This allows for multi-part answers (e.g., "cost and power" -> both have score 1)
-  const bestMatches = matches.filter(match => match.score === topScore);
-
-  // Join all best answers, separated by a newline
-  // Use innerText/textContent in appendMessage, so \n will render as a line break
-  return bestMatches.map(m => m.answer).join('\n\n');
-}
-
-// Add 'Enter' key listener to chat input
-document.getElementById('chatInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    sendChat();
-  }
-});
-
-// --- SIMULATION FUNCTION ---
-/**
- * Simulates adding collected weight.
- * @param {number} kg - The weight in kg to add.
- */
-function simulateCollection(kg) {
+function simulateCollection(kg){
   CLEANFLOW_DATA.monitor.collectionTodayKg += kg;
-  
-  // Update the UI element
-  const collectionEl = document.getElementById('today-collection');
-  const newTotal = CLEANFLOW_DATA.monitor.collectionTodayKg.toFixed(1);
-  collectionEl.innerText = newTotal + 'kg';
-  
-  // Send a notification to the chat (if open)
-  if (!document.getElementById('chatWidget').classList.contains('hidden')) {
-    appendMessage(`Simulated collection: +${kg}kg. Total today: ${newTotal}kg`, 'bot');
-  }
+  document.getElementById('today-collection').innerText = CLEANFLOW_DATA.monitor.collectionTodayKg.toFixed(1) + 'kg';
+  appendMessage(`Simulated collection: +${kg}kg. Total today: ${CLEANFLOW_DATA.monitor.collectionTodayKg.toFixed(1)}kg`, 'bot');
 }
 </script>
 
 </body>
 </html>
-
