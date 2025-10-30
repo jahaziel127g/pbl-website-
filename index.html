@@ -4,17 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CleanFlow Delhi — AI River Cleanup</title>
-
-  <!-- Tailwind via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
   <meta name="description" content="CleanFlow Delhi — affordable AI system to detect, classify, and collect river trash." />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    /* Glass/visual helpers */
     .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+
+    /* Chat bubbles */
     .bot-bubble { background: #eef6ff; color: #003366; }
     .user-bubble { background: #003366; color: white; }
+
+    /* Chat widget minimized state */
+    .chat-minimized {
+      height: 40px !important;
+      overflow: hidden !important;
+    }
   </style>
 </head>
 <body class="bg-blue-50 text-slate-900 antialiased">
@@ -32,6 +42,7 @@
         <p class="text-xs text-slate-500">AI-powered river cleanup</p>
       </div>
     </div>
+
     <nav class="hidden md:flex gap-4 items-center text-sm">
       <a href="#about" class="px-3 py-2 hover:bg-blue-50 rounded">About</a>
       <a href="#prototype" class="px-3 py-2 hover:bg-blue-50 rounded">Prototype</a>
@@ -40,6 +51,7 @@
       <a href="#monitor" class="px-3 py-2 hover:bg-blue-50 rounded">Monitor</a>
       <button onclick="openChat()" class="bg-blue-600 text-white px-3 py-2 rounded shadow">Chat with FlowMate</button>
     </nav>
+
     <div class="md:hidden flex items-center gap-2">
       <button onclick="openChat()" class="bg-blue-600 text-white px-3 py-2 rounded">Chat</button>
     </div>
@@ -57,7 +69,7 @@
         <div class="p-4 bg-white rounded-lg shadow-sm border flex flex-col">
           <span class="text-xs text-slate-400">System Status</span>
           <div class="mt-2 font-semibold text-blue-700">Active</div>
-          <div class="text-sm text-slate-500 mt-1">Collection: <strong id="today-collection">12kg</strong> today</div>
+          <div class="text-sm text-slate-500 mt-1">Collection: <strong id="today-collection">—</strong></div>
         </div>
         <div class="p-4 bg-white rounded-lg shadow-sm border flex flex-col">
           <span class="text-xs text-slate-400">Prototype Unit Cost</span>
@@ -71,8 +83,9 @@
         <button onclick="openChat()" class="px-4 py-2 border border-blue-600 rounded text-blue-600">Talk to FlowMate</button>
       </div>
     </div>
+
     <div class="rounded-lg overflow-hidden border bg-white shadow-sm">
-      <img src="images/hero-placeholder.jpg" alt="Add your hero image in images/hero-placeholder.jpg" class="w-full h-72 object-cover">
+      <img src="images/hero-placeholder.jpg" alt="Hero image — replace images/hero-placeholder.jpg with your image" class="w-full h-72 object-cover">
     </div>
   </section>
 
@@ -101,9 +114,10 @@
       <h3 class="text-lg font-semibold text-slate-800">Water Threat vs Garbage Polluted</h3>
       <p class="text-sm text-slate-500 mt-1">Pie chart uses provided values: water threat = <strong>27.5</strong>, garbage polluted = <strong>72.5</strong>.</p>
       <div class="mt-4">
-        <canvas id="pieChart" width="400" height="260"></canvas>
+        <canvas id="pieChart" width="400" height="260" aria-label="Pie chart: water threat vs garbage polluted"></canvas>
       </div>
     </div>
+
     <div class="p-6 bg-white rounded-lg shadow-sm border">
       <h3 class="text-lg font-semibold text-slate-800">CleanFlow Monitor</h3>
       <ul class="mt-3 space-y-2 text-sm text-slate-600">
@@ -205,37 +219,70 @@
   </div>
 
   <div id="chatBody" class="bg-white p-3 h-64 overflow-auto space-y-3">
-    <div class="bot-bubble p-3 rounded-lg text-sm max-w-[85%] bot-bubble">
+    <div class="bot-bubble p-3 rounded-lg text-sm max-w-[85%]">
       Hi! I'm FlowMate, your AI buddy for CleanFlow Delhi. Ask me about prototype specs, river pollution stats, daily collection, or how the model works.
     </div>
   </div>
 
   <div class="p-3 bg-white border-t flex items-center gap-2">
-    <input id="chatInput" class="flex-1 px-3 py-2 border rounded-md text-sm" placeholder="Ask FlowMate..." />
+    <input id="chatInput" class="flex-1 px-3 py-2 border rounded-md text-sm" placeholder="Ask FlowMate..." aria-label="Ask FlowMate" />
     <button onclick="sendChat()" class="px-3 py-2 bg-blue-600 text-white rounded">Send</button>
   </div>
 </div>
 
 <script>
+/* -------------------------
+   DATA / CONFIG
+   ------------------------- */
 const CLEANFLOW_DATA = {
   siteName: "CleanFlow Delhi",
   pollutionStats: { untreatedSewagePct: 80, tonsDaily: "3,800+", plasticSharePct: 60, peopleAffected: "22M+" },
   aiDetection: { plastic: 68, paper: 12, other: 20 },
-  monitor: { status: "Active", collectionTodayKg: 12 },
+  monitor: { status: "Active", collectionTodayKg: 12 }, // number
   prototype: { detectionAccuracyPct: 85, collectionRatePct: 72, powerUsageW: 12, unitCostINR: 2500000, capacityAnnualTonsEstimate: 500 },
   pieData: { waterThreat: 27.5, garbagePolluted: 72.5 }
 };
 
-document.getElementById('today-collection').innerText = CLEANFLOW_DATA.monitor.collectionTodayKg + 'kg';
+/* helper to format kg nicely */
+function formatKg(n) {
+  const num = Number(n) || 0;
+  return (Number.isInteger(num) ? num : num.toFixed(1)) + 'kg';
+}
 
-// Pie chart
-const ctx = document.getElementById('pieChart').getContext('2d');
-new Chart(ctx, { type: 'pie', data: {
-  labels: ['Water Threat', 'Garbage Polluted'],
-  datasets: [{ data: [CLEANFLOW_DATA.pieData.waterThreat, CLEANFLOW_DATA.pieData.garbagePolluted], backgroundColor: ['#60a5fa', '#1e40af'], hoverOffset: 6 }]
-}, options: { plugins:{legend:{position:'bottom'}}}});
+/* initial display */
+document.getElementById('today-collection').innerText = formatKg(CLEANFLOW_DATA.monitor.collectionTodayKg);
 
-// Chatbot KB
+/* -------------------------
+   PIE CHART (safe guard)
+   ------------------------- */
+(function initChart(){
+  if (typeof Chart === 'undefined') {
+    console.warn('Chart.js not loaded — pie chart skipped.');
+    return;
+  }
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  // store chart so it can be updated later if needed
+  window.cleanflowPieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Water Threat', 'Garbage Polluted'],
+      datasets: [{
+        data: [CLEANFLOW_DATA.pieData.waterThreat, CLEANFLOW_DATA.pieData.garbagePolluted],
+        backgroundColor: ['#60a5fa', '#1e40af'],
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      plugins: { legend: { position: 'bottom' } },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+})();
+
+/* -------------------------
+   CHATBOT KB + LOGIC
+   ------------------------- */
 const kb = [
   { keywords: ['detection','accuracy','detect'], answer: `Prototype detection accuracy is ${CLEANFLOW_DATA.prototype.detectionAccuracyPct}%.` },
   { keywords: ['collection','rate'], answer: `Collection rate: ${CLEANFLOW_DATA.prototype.collectionRatePct}%. Capacity ~${CLEANFLOW_DATA.prototype.capacityAnnualTonsEstimate}+ tons/year.` },
@@ -249,28 +296,90 @@ const kb = [
   { keywords: ['model','how it works','ai','tensorflow','detection'], answer: "FlowMate AI model captures images with a camera, classifies trash using TensorFlow Lite, and guides the mechanical collection system. Steps: 1️⃣ Capture, 2️⃣ Detect, 3️⃣ Classify, 4️⃣ Collect, 5️⃣ Log data." }
 ];
 
-function openChat(){ document.getElementById('chatWidget').classList.remove('hidden'); document.getElementById('chatInput').focus(); }
-function closeChat(){ document.getElementById('chatWidget').classList.add('hidden'); }
-function minimizeChat(){ const w=document.getElementById('chatWidget'); w.style.height = w.style.height && w.style.height!==''?'':'40px'; }
-
-function appendMessage(text, from='bot'){ const container=document.createElement('div'); container.className=from==='bot'?'bot-bubble p-3 rounded-lg text-sm max-w-[85%]':'user-bubble p-3 rounded-lg text-sm ml-auto max-w-[85%]'; container.textContent=text; document.getElementById('chatBody').appendChild(container); document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }
-
-function sendChat(){ const input=document.getElementById('chatInput'); const txt=input.value.trim(); if(!txt) return; appendMessage(txt,'user'); input.value=''; setTimeout(()=>{ appendMessage(generateReply(txt),'bot'); },400); }
-
-function generateReply(userText){ 
-  const u=userText.toLowerCase(); 
-  if(u.includes('hello')||u.includes('hi')) return "Hey! I'm FlowMate, AI buddy for CleanFlow Delhi. Ask me about prototype specs, pollution stats, daily collection, or how the model works."; 
-  if(u.includes('status')) return `System Status: ${CLEANFLOW_DATA.monitor.status}. Today's collection: ${CLEANFLOW_DATA.monitor.collectionTodayKg}kg.`; 
-  for(const entry of kb) if(entry.keywords.some(k=>u.includes(k))) return entry.answer; 
-  return `Quick summary: Detection ${CLEANFLOW_DATA.prototype.detectionAccuracyPct}% | Collection rate ${CLEANFLOW_DATA.prototype.collectionRatePct}% | Power ${CLEANFLOW_DATA.prototype.powerUsageW}W | Unit cost ₹${CLEANFLOW_DATA.prototype.unitCostINR.toLocaleString()}. Ask me for specific stats.`; 
+/* -------------------------
+   CHAT WIDGET FUNCTIONS
+   ------------------------- */
+function openChat() {
+  const w = document.getElementById('chatWidget');
+  w.classList.remove('hidden');
+  w.classList.remove('chat-minimized');
+  // ensure chat area visible and scroll to bottom
+  setTimeout(() => {
+    document.getElementById('chatInput').focus();
+    const body = document.getElementById('chatBody');
+    body.scrollTop = body.scrollHeight;
+  }, 50);
 }
 
-document.getElementById('chatInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); sendChat(); }});
+function closeChat() {
+  const w = document.getElementById('chatWidget');
+  w.classList.add('hidden');
+}
 
-function simulateCollection(kg){
-  CLEANFLOW_DATA.monitor.collectionTodayKg += kg;
-  document.getElementById('today-collection').innerText = CLEANFLOW_DATA.monitor.collectionTodayKg.toFixed(1) + 'kg';
-  appendMessage(`Simulated collection: +${kg}kg. Total today: ${CLEANFLOW_DATA.monitor.collectionTodayKg.toFixed(1)}kg`, 'bot');
+function minimizeChat() {
+  const w = document.getElementById('chatWidget');
+  w.classList.toggle('chat-minimized');
+}
+
+/* appends a chat message safely */
+function appendMessage(text, from='bot') {
+  const wrapper = document.createElement('div');
+  wrapper.className = from === 'bot'
+    ? 'bot-bubble p-3 rounded-lg text-sm max-w-[85%]'
+    : 'user-bubble p-3 rounded-lg text-sm ml-auto max-w-[85%]';
+  wrapper.textContent = text;
+  document.getElementById('chatBody').appendChild(wrapper);
+  // scroll
+  const body = document.getElementById('chatBody');
+  body.scrollTop = body.scrollHeight;
+}
+
+/* send / receive */
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const txt = input.value.trim();
+  if(!txt) return;
+  appendMessage(txt, 'user');
+  input.value = '';
+  setTimeout(() => {
+    appendMessage(generateReply(txt), 'bot');
+  }, 350);
+}
+
+/* very small rule-based reply engine */
+function generateReply(userText){
+  const u = userText.toLowerCase();
+  if(u.includes('hello')||u.includes('hi')) return "Hey! I'm FlowMate, AI buddy for CleanFlow Delhi. Ask me about prototype specs, pollution stats, daily collection, or how the model works.";
+  if(u.includes('status')) return `System Status: ${CLEANFLOW_DATA.monitor.status}. Today's collection: ${formatKg(CLEANFLOW_DATA.monitor.collectionTodayKg)}.`;
+  for(const entry of kb) {
+    if (entry.keywords.some(k => u.includes(k))) return entry.answer;
+  }
+  return `Quick summary: Detection ${CLEANFLOW_DATA.prototype.detectionAccuracyPct}% | Collection rate ${CLEANFLOW_DATA.prototype.collectionRatePct}% | Power ${CLEANFLOW_DATA.prototype.powerUsageW}W | Unit cost ₹${CLEANFLOW_DATA.prototype.unitCostINR.toLocaleString()}. Ask me for specific stats.`;
+}
+
+/* Enter key send */
+document.getElementById('chatInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    sendChat();
+  }
+});
+
+/* -------------------------
+   SIMULATION / UI UPDATES
+   ------------------------- */
+function simulateCollection(kg) {
+  const add = Number(kg) || 0;
+  CLEANFLOW_DATA.monitor.collectionTodayKg += add;
+  document.getElementById('today-collection').innerText = formatKg(CLEANFLOW_DATA.monitor.collectionTodayKg);
+  appendMessage(`Simulated collection: +${add}kg. Total today: ${formatKg(CLEANFLOW_DATA.monitor.collectionTodayKg)}`, 'bot');
+
+  // Optional: update pie chart or other live data here if desired.
+  // Example: update chart (not changing pie values here since simulation is about weight).
+  if (window.cleanflowPieChart) {
+    // placeholder if later you'd like to reflect metrics on chart
+    // window.cleanflowPieChart.update();
+  }
 }
 </script>
 
